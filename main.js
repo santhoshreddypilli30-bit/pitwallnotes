@@ -55,4 +55,59 @@ document.addEventListener('DOMContentLoaded', () => {
     if (target === path || (path === '' && target === 'index.html')) a.classList.add('active');
   });
 
+  /* ---------- Subtle parallax on article hero photos ---------- */
+  const parallaxEls = document.querySelectorAll('.article-hero');
+  if (parallaxEls.length) {
+    let ticking = false;
+    const updateParallax = () => {
+      parallaxEls.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const shift = rect.top * 0.12;
+        el.style.backgroundPosition = `center calc(50% + ${shift}px)`;
+      });
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }, { passive: true });
+    updateParallax();
+  }
+
+  /* ---------- Animated stat count-up (stat strips on article pages) ---------- */
+  const statStrips = document.querySelectorAll('.stat-strip');
+  if (statStrips.length && 'IntersectionObserver' in window) {
+    const animateValue = (el) => {
+      const original = el.textContent.trim();
+      const match = original.match(/^([+\-−]?)(\d+(\.\d+)?)/);
+      if (!match) return;
+      const prefix = match[1];
+      const num = parseFloat(match[2]);
+      const decimals = match[3] ? match[3].length - 1 : 0;
+      const suffix = original.slice(match[0].length);
+      const duration = 900;
+      const start = performance.now();
+      const step = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const current = num * eased;
+        el.textContent = prefix + current.toFixed(decimals) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = original;
+      };
+      requestAnimationFrame(step);
+    };
+    const statIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.val').forEach(animateValue);
+          statIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    statStrips.forEach(strip => statIo.observe(strip));
+  }
+
 });
