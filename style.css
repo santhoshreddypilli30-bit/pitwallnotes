@@ -84,9 +84,10 @@ body.is-leaving { animation: pageOut .32s var(--ease) forwards; }
 }
 .nav-brand {
   font-family: var(--display); font-weight: 400; font-size: 1.5rem;
-  letter-spacing: .02em; display: flex; align-items: baseline; gap: .3rem;
+  letter-spacing: .02em; display: flex; align-items: center; gap: .55rem;
   text-transform: uppercase;
 }
+.brand-logo { height: 40px; width: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .nav-brand .dot { color: var(--red); font-size: 1.7rem; line-height: 0; }
 .nav-brand small {
   font-family: var(--mono); font-size: .58rem; letter-spacing: .18em;
